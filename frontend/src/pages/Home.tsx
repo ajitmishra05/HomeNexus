@@ -6,7 +6,6 @@ import { Users, Briefcase, MessageSquare } from 'lucide-react';
 import plumberImg from '../assets/master-plumber.jpg';
 import electricianImg from '../assets/electrician-facts.jpg';
 import laundryImg from '../assets/laundry.png';
-import milkImg from '../assets/milk.avif';
 
 const LandingPage = () => {
   const scrollToFeatures = () => {
