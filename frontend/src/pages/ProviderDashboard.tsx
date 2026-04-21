@@ -9,7 +9,7 @@ import { ChatModal } from '../components/ChatModal';
 import { useAuthStore } from '../store/authStore';
 import { io, Socket } from 'socket.io-client';
 
-const SOCKET_URL = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000';
+const SOCKET_URL = import.meta.env.VITE_API_URL?.replace('/api', '');
 
 const ProviderDashboard = () => {
   const [services, setServices] = useState<any[]>([]);

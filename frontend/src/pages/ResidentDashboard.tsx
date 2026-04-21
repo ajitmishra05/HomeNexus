@@ -9,7 +9,7 @@ import { useAuthStore } from '../store/authStore';
 import { io, Socket } from 'socket.io-client';
 import { ServiceCard } from '../components/ServiceCard';
 
-const SOCKET_URL = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000';
+const SOCKET_URL = import.meta.env.VITE_API_URL?.replace('/api', '');
 
 const ResidentDashboard = () => {
   const [services, setServices] = useState<any[]>([]);

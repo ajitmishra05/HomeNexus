@@ -14,7 +14,7 @@ interface ChatModalProps {
   otherUserName: string;
 }
 
-const SOCKET_URL = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000';
+const SOCKET_URL = import.meta.env.VITE_API_URL?.replace('/api', '');
 
 export function ChatModal({ isOpen, onClose, bookingId, currentUserId, otherUserName }: ChatModalProps) {
   const [messages, setMessages] = useState<any[]>([]);

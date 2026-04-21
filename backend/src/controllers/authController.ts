@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import User from '../models/User';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'homenexus-super-secret-key';
+const JWT_SECRET = process.env.JWT_SECRET as string;
 
 const generateToken = (id: string) => {
   return jwt.sign({ id }, JWT_SECRET, { expiresIn: '30d' });

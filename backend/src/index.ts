@@ -1,4 +1,4 @@
-import express, { Request, Response } from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import connectDB from './config/db';
@@ -11,7 +11,7 @@ dotenv.config();
 const app = express();
 const server = http.createServer(app);
 
-const FRONTEND_URL = process.env.FRONTEND_URL || '*';
+const FRONTEND_URL = process.env.FRONTEND_URL;
 
 // Setup Socket.io
 const io = new Server(server, {
@@ -55,6 +55,16 @@ io.on('connection', (socket) => {
 app.use(cors({ origin: FRONTEND_URL }));
 app.use(express.json());
 
+// Global Request Logger
+app.use((req: Request, res: Response, next: NextFunction) => {
+  const start = Date.now();
+  res.on('finish', () => {
+    const duration = Date.now() - start;
+    console.log(`[${new Date().toISOString()}] ${req.method} ${req.originalUrl} ${res.statusCode} (${duration}ms)`);
+  });
+  next();
+});
+
 // Routes
 import authRoutes from './routes/authRoutes';
 import serviceRoutes from './routes/serviceRoutes';
@@ -90,18 +100,20 @@ const PORT = process.env.PORT || 5000;
 connectDB().then(async () => {
   // Seed Master Admin
   try {
-    const adminEmail = 'ajitmishra05@admin.com';
-    const adminExists = await User.findOne({ email: adminEmail });
-    if (!adminExists) {
-      const hashedPassword = await bcrypt.hash('mishraajit05', 10);
-      await User.create({
-        name: 'Master Admin',
-        email: adminEmail,
-        password: hashedPassword,
-        role: 'admin',
-        firebaseUid: 'admin_master_123',
-      });
-      console.log('Master Admin seeded successfully');
+    const adminEmail = process.env.ADMIN_EMAIL;
+    if (adminEmail) {
+      const adminExists = await User.findOne({ email: adminEmail });
+      if (!adminExists) {
+        const hashedPassword = await bcrypt.hash(process.env.ADMIN_PASSWORD as string, 10);
+        await User.create({
+          name: 'Master Admin',
+          email: adminEmail,
+          password: hashedPassword,
+          role: 'admin',
+          firebaseUid: process.env.ADMIN_FIREBASE_UID,
+        });
+        console.log('Master Admin seeded successfully');
+      }
     }
   } catch (error) {
     console.error('Error seeding Master Admin:', error);
