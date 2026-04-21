@@ -44,6 +44,23 @@ export const updateService = asyncHandler(async (req: AuthRequest, res: Response
   res.json(updatedService);
 });
 
+export const deleteService = asyncHandler(async (req: AuthRequest, res: Response) => {
+  const service = await Service.findById(req.params.id);
+
+  if (!service) {
+    res.status(404);
+    throw new Error('Service not found');
+  }
+
+  if (service.providerId.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
+    res.status(401);
+    throw new Error('Not authorized to delete this service');
+  }
+
+  await service.deleteOne();
+  res.json({ message: 'Service removed successfully' });
+});
+
 export const getProviderServices = asyncHandler(async (req: AuthRequest, res: Response) => {
   const providerServices = await Service.find({ providerId: req.user._id });
   res.json(providerServices);

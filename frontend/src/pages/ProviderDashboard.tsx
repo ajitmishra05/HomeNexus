@@ -113,6 +113,20 @@ const ProviderDashboard = () => {
     }
   };
 
+  const handleDeleteService = async (serviceId: string) => {
+    if (confirm('Are you sure you want to delete this service?')) {
+      try {
+        await fetchAPI(`/services/${serviceId}`, {
+          method: 'DELETE',
+        });
+        setServices(services.filter(s => s._id !== serviceId));
+      } catch (error) {
+        console.error(error);
+        alert('Failed to delete service');
+      }
+    }
+  };
+
   const handleUpdateBooking = async (bookingId: string, status: string) => {
     try {
       await fetchAPI(`/bookings/${bookingId}/status`, {
@@ -176,7 +190,7 @@ const ProviderDashboard = () => {
                       placeholder="E.g., 50/hr or 100/visit"
                     />
                   </div>
-                  <Button type="submit">Create Service</Button>
+                  <Button type="submit" className="w-full">Create Service</Button>
                 </form>
               </CardContent>
             </Card>
@@ -229,18 +243,28 @@ const ProviderDashboard = () => {
                             <p className="text-sm text-gray-600 mb-1">{service.description}</p>
                             <p className="text-sm font-medium bg-gray-100 inline-block px-2 py-1 rounded">Price: {service.price}</p>
                           </div>
-                          <Button 
-                            variant="outline" 
-                            size="sm" 
-                            onClick={() => {
-                              setEditingServiceId(service._id);
-                              setEditCategory(service.category);
-                              setEditPrice(service.price);
-                              setEditDescription(service.description);
-                            }}
-                          >
-                            Edit
-                          </Button>
+                          <div className="flex gap-2">
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              onClick={() => {
+                                setEditingServiceId(service._id);
+                                setEditCategory(service.category);
+                                setEditPrice(service.price);
+                                setEditDescription(service.description);
+                              }}
+                            >
+                              Edit
+                            </Button>
+                            <Button 
+                              variant="destructive" 
+                              size="sm" 
+                              className="bg-red-500 hover:bg-red-600"
+                              onClick={() => handleDeleteService(service._id)}
+                            >
+                              Delete
+                            </Button>
+                          </div>
                         </div>
                       )}
                     </CardContent>
