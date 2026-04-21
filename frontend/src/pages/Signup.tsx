@@ -20,9 +20,9 @@ const Signup = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const data = await fetchAPI('/auth/login', {
+      const data = await fetchAPI('/auth/signup', {
         method: 'POST',
-        body: JSON.stringify({ email, name, role }),
+        body: JSON.stringify({ email, password, name, role }),
       });
       login(data);
       navigate(data.role === 'resident' ? '/resident' : '/provider');
