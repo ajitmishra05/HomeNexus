@@ -5,8 +5,9 @@ import Service from '../models/Service';
 import User from '../models/User';
 import { AuthRequest } from '../middleware/authMiddleware';
 
-export const createBooking = asyncHandler(async (req: AuthRequest, res: Response) => {
-  if (req.user.role !== 'resident') {
+export const createBooking = asyncHandler(async (req: Request, res: Response) => {
+  const authReq = req as AuthRequest;
+  if (authReq.user.role !== 'resident') {
     res.status(403);
     throw new Error('Only residents can create bookings');
   }
@@ -20,7 +21,7 @@ export const createBooking = asyncHandler(async (req: AuthRequest, res: Response
   }
 
   const booking = await Booking.create({
-    residentId: req.user._id,
+    residentId: authReq.user._id,
     serviceId,
     providerId: service.providerId,
     scheduledDate,
@@ -31,23 +32,26 @@ export const createBooking = asyncHandler(async (req: AuthRequest, res: Response
   res.status(201).json(booking);
 });
 
-export const getResidentBookings = asyncHandler(async (req: AuthRequest, res: Response) => {
-  const residentBookings = await Booking.find({ residentId: req.user._id })
+export const getResidentBookings = asyncHandler(async (req: Request, res: Response) => {
+  const authReq = req as AuthRequest;
+  const residentBookings = await Booking.find({ residentId: authReq.user._id })
     .populate('serviceId')
     .populate('providerId', 'name email');
     
   res.json(residentBookings);
 });
 
-export const getProviderBookings = asyncHandler(async (req: AuthRequest, res: Response) => {
-  const providerBookings = await Booking.find({ providerId: req.user._id })
+export const getProviderBookings = asyncHandler(async (req: Request, res: Response) => {
+  const authReq = req as AuthRequest;
+  const providerBookings = await Booking.find({ providerId: authReq.user._id })
     .populate('serviceId')
     .populate('residentId', 'name email');
     
   res.json(providerBookings);
 });
 
-export const updateBookingStatus = asyncHandler(async (req: AuthRequest, res: Response) => {
+export const updateBookingStatus = asyncHandler(async (req: Request, res: Response) => {
+  const authReq = req as AuthRequest;
   const { status } = req.body;
   const booking = await Booking.findById(req.params.id);
 
@@ -56,7 +60,7 @@ export const updateBookingStatus = asyncHandler(async (req: AuthRequest, res: Re
     throw new Error('Booking not found');
   }
 
-  if (booking.providerId.toString() !== req.user._id.toString() && booking.residentId.toString() !== req.user._id.toString()) {
+  if (booking.providerId.toString() !== authReq.user._id.toString() && booking.residentId.toString() !== authReq.user._id.toString()) {
     res.status(401);
     throw new Error('Not authorized to update this booking');
   }
@@ -66,7 +70,8 @@ export const updateBookingStatus = asyncHandler(async (req: AuthRequest, res: Re
   res.json(updatedBooking);
 });
 
-export const rateBooking = asyncHandler(async (req: AuthRequest, res: Response) => {
+export const rateBooking = asyncHandler(async (req: Request, res: Response) => {
+  const authReq = req as AuthRequest;
   const { rating } = req.body;
   const booking = await Booking.findById(req.params.id);
 
@@ -75,7 +80,7 @@ export const rateBooking = asyncHandler(async (req: AuthRequest, res: Response) 
     throw new Error('Booking not found');
   }
 
-  if (booking.residentId.toString() !== req.user._id.toString()) {
+  if (booking.residentId.toString() !== authReq.user._id.toString()) {
     res.status(401);
     throw new Error('Not authorized to rate this booking');
   }

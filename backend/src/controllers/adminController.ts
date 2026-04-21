@@ -8,7 +8,7 @@ import { AuthRequest } from '../middleware/authMiddleware';
 // @desc    Get all users
 // @route   GET /api/admin/users
 // @access  Private/Admin
-export const getAllUsers = asyncHandler(async (req: AuthRequest, res: Response) => {
+export const getAllUsers = asyncHandler(async (req: Request, res: Response) => {
   const users = await User.find({}).select('-password');
   res.json(users);
 });
@@ -16,7 +16,7 @@ export const getAllUsers = asyncHandler(async (req: AuthRequest, res: Response) 
 // @desc    Delete user
 // @route   DELETE /api/admin/users/:id
 // @access  Private/Admin
-export const deleteUser = asyncHandler(async (req: AuthRequest, res: Response) => {
+export const deleteUser = asyncHandler(async (req: Request, res: Response) => {
   const user = await User.findById(req.params.id);
 
   if (user) {
@@ -43,7 +43,7 @@ export const deleteUser = asyncHandler(async (req: AuthRequest, res: Response) =
 // @desc    Get System Health (Global Average Rating C)
 // @route   GET /api/admin/system-health
 // @access  Private/Admin
-export const getSystemHealth = asyncHandler(async (req: AuthRequest, res: Response) => {
+export const getSystemHealth = asyncHandler(async (req: Request, res: Response) => {
   const providers = await User.find({ role: 'serviceProvider', votes: { $gt: 0 } });
   let totalRatingSum = 0;
   let totalProvidersWithVotes = 0;

@@ -8,8 +8,9 @@ import { AuthRequest } from '../middleware/authMiddleware';
 // @desc    Update user profile
 // @route   PUT /api/users/profile
 // @access  Private
-export const updateUserProfile = asyncHandler(async (req: AuthRequest, res: Response) => {
-  const user = await User.findById(req.user._id);
+export const updateUserProfile = asyncHandler(async (req: Request, res: Response) => {
+  const authReq = req as AuthRequest;
+  const user = await User.findById(authReq.user._id);
 
   if (user) {
     user.name = req.body.name || user.name;
@@ -44,8 +45,9 @@ export const updateUserProfile = asyncHandler(async (req: AuthRequest, res: Resp
 // @desc    Delete user profile
 // @route   DELETE /api/users/profile
 // @access  Private
-export const deleteUserProfile = asyncHandler(async (req: AuthRequest, res: Response) => {
-  const user = await User.findById(req.user._id);
+export const deleteUserProfile = asyncHandler(async (req: Request, res: Response) => {
+  const authReq = req as AuthRequest;
+  const user = await User.findById(authReq.user._id);
 
   if (user) {
     // Also delete associated services and bookings

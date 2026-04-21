@@ -1,9 +1,9 @@
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import asyncHandler from 'express-async-handler';
 import Message from '../models/Message';
 import { AuthRequest } from '../middleware/authMiddleware';
 
-export const getMessagesByBooking = asyncHandler(async (req: AuthRequest, res: Response) => {
+export const getMessagesByBooking = asyncHandler(async (req: Request, res: Response) => {
   const { bookingId } = req.params;
   
   // Find messages by bookingId and sort by timestamp ascending

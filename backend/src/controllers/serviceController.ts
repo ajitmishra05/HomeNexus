@@ -4,15 +4,16 @@ import Service from '../models/Service';
 import User from '../models/User';
 import { AuthRequest } from '../middleware/authMiddleware';
 
-export const createService = asyncHandler(async (req: AuthRequest, res: Response) => {
-  if (req.user.role !== 'serviceProvider') {
+export const createService = asyncHandler(async (req: Request, res: Response) => {
+  const authReq = req as AuthRequest;
+  if (authReq.user.role !== 'serviceProvider') {
     res.status(403);
     throw new Error('Only service providers can create services');
   }
 
   const { category, description, price } = req.body;
   const service = await Service.create({
-    providerId: req.user._id,
+    providerId: authReq.user._id,
     category,
     description,
     price,
@@ -22,7 +23,8 @@ export const createService = asyncHandler(async (req: AuthRequest, res: Response
   res.status(201).json(service);
 });
 
-export const updateService = asyncHandler(async (req: AuthRequest, res: Response) => {
+export const updateService = asyncHandler(async (req: Request, res: Response) => {
+  const authReq = req as AuthRequest;
   const service = await Service.findById(req.params.id);
 
   if (!service) {
@@ -30,7 +32,7 @@ export const updateService = asyncHandler(async (req: AuthRequest, res: Response
     throw new Error('Service not found');
   }
 
-  if (service.providerId.toString() !== req.user._id.toString()) {
+  if (service.providerId.toString() !== authReq.user._id.toString()) {
     res.status(401);
     throw new Error('Not authorized to update this service');
   }
@@ -44,7 +46,8 @@ export const updateService = asyncHandler(async (req: AuthRequest, res: Response
   res.json(updatedService);
 });
 
-export const deleteService = asyncHandler(async (req: AuthRequest, res: Response) => {
+export const deleteService = asyncHandler(async (req: Request, res: Response) => {
+  const authReq = req as AuthRequest;
   const service = await Service.findById(req.params.id);
 
   if (!service) {
@@ -52,7 +55,7 @@ export const deleteService = asyncHandler(async (req: AuthRequest, res: Response
     throw new Error('Service not found');
   }
 
-  if (service.providerId.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
+  if (service.providerId.toString() !== authReq.user._id.toString() && authReq.user.role !== 'admin') {
     res.status(401);
     throw new Error('Not authorized to delete this service');
   }
@@ -61,8 +64,9 @@ export const deleteService = asyncHandler(async (req: AuthRequest, res: Response
   res.json({ message: 'Service removed successfully' });
 });
 
-export const getProviderServices = asyncHandler(async (req: AuthRequest, res: Response) => {
-  const providerServices = await Service.find({ providerId: req.user._id });
+export const getProviderServices = asyncHandler(async (req: Request, res: Response) => {
+  const authReq = req as AuthRequest;
+  const providerServices = await Service.find({ providerId: authReq.user._id });
   res.json(providerServices);
 });
 

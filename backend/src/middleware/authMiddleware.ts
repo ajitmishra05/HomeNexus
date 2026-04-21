@@ -9,8 +9,9 @@ export interface AuthRequest extends Request {
   user?: any;
 }
 
-export const protect = asyncHandler(async (req: AuthRequest, res: Response, next: NextFunction) => {
+export const protect = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
   let token;
+  const authReq = req as AuthRequest;
 
   if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
     try {
@@ -19,7 +20,7 @@ export const protect = asyncHandler(async (req: AuthRequest, res: Response, next
       const user = await User.findById(decoded.id).select('-password');
       
       if (!user) throw new Error('User not found');
-      req.user = user;
+      authReq.user = user;
       next();
     } catch (error) {
       console.error(error);
